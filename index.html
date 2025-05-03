@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צ'אטבוט למיצוי זכויות טיפוליות - גן תקשורת</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f8ff;
+            direction: rtl;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            display: flex;
+            max-width: 1200px;
+            height: 100vh;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background-color: #f0f5ff;
+            padding: 20px;
+            border-left: 1px solid #e0e0f0;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0f0;
+        }
+        
+        .sidebar-title {
+            font-size: 1.2rem;
+            color: #4c6ef5;
+            margin-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-title i {
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-content {
+            font-size: 0.95rem;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .info-item:hover {
+            background-color: #e3f2fd;
+            border-color: #c5cae9;
+        }
+        
+        .info-item-title {
+            font-weight: 600;
+            color: #4c6ef5;
+            margin-bottom: 3px;
+        }
+        
+        .chat-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-header {
+            background: linear-gradient(90deg, #4c6ef5, #3b5ef0);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+        }
+        
+        .chat-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .chat-header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .toggle-sidebar {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9fbff;
+        }
+        
+        .message {
+            padding: 12px 18px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            max-width: 80%;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user {
+            background-color: #e3f2fd;
+            color: #333;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            border-top-left-radius: 18px;
+        }
+        
+        .bot {
+            background-color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 18px;
+            border-left: 3px solid #4c6ef5;
+        }
+        
+        .message p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .time {
+            font-size: 0.7rem;
+            color: #777;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 18px;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+            align-items: center;
+            position: relative;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #f5f7fb;
+        }
+        
+        .chat-input input:focus {
+            border-color: #4c6ef5;
+            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
+            background-color: white;
+        }
+        
+        .chat-input button {
+            background-color: #4c6ef5;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            padding: 12px 22px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-input button i {
+            margin-left: 5px;
+        }
+        
+        .chat-input button:hover {
+            background-color: #3b5ef0;
+        }
+        
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        
+        .quick-reply {
+            background-color: #f0f5ff;
+            border: 1px solid #c5cae9;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4c6ef5;
+        }
+        
+        .quick-reply:hover {
+            background-color: #e3eaff;
+            border-color: #4c6ef5;
+        }
+        
+        .document-container {
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f9f9ff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .document-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4c6ef5;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+        
+        .document-title i {
+            margin-left: 8px;
+        }
+        
+        .document-content {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: white;
+            border-radius: 18px;
+            margin-right: auto;
+            margin-bottom: 10px;
+            width: fit-content;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4c6ef5;
+            margin: 0 2px;
+            animation: typingAnimation 1.5s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingAnimation {
+            0% { transform: translateY(0px); opacity: 0.5; }
+            25% { transform: translateY(-5px); opacity: 1; }
+            50% { transform: translateY(0px); opacity: 0.5; }
+        }
+        
+        .bot-content strong {
+            color: #4c6ef5;
+            font-weight: 600;
+        }
+        
+        .bot-content ul, .bot-content ol {
+            padding-right: 20px;
+            margin: 12px 0;
+        }
+        
+        .bot-content li {
+            margin-bottom: 5px;
+        }
+        
+        .bot-content h3, .bot-content h4, .bot-content h5 {
+            margin: 15px 0 8px 0;
+            color: #333;
+        }
+        
+        .document-button {
+            background-color: #4c6ef5;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .document-button i {
+            margin-left: 5px;
+        }
+        
+        .document-button:hover {
+            background-color: #3b5ef0;
+        }
+        
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .resource-link {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #4c6ef5;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .resource-link i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #4c6ef5;
+        }
+        
+        .resource-link:hover {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            border-color: #4c6ef5;
+        }
+        
+        /* מדיה קוורי למובייל */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                right: -100%;
+                transition: all 0.3s;
+            }
+            
+            .sidebar.active {
+                right: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .chat-header .title-container {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .chat-header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .chat-input {
+                padding: 12px;
+            }
+            
+            .chat-input input {
+                padding: 10px 15px;
+            }
+            
+            .chat-input button {
+                padding: 10px 15px;
+            }
+        }
+        
+        /* סגנון נוסף למאמר ומדריך */
+        .article-container {
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .article-title {
+            font-size: 1.4rem;
+            color: #4c6ef5;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #f0f5ff;
+            padding-bottom: 10px;
+        }
+        
+        .article-content {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .article-content h2 {
+            font-size: 1.2rem;
+            color: #3b5ef0;
+            margin: 20px 0 10px;
+        }
+        
+        .article-content h3 {
+            font-size: 1.1rem;
+            color: #555;
+            margin: 15px 0 8px;
+        }
+        
+        /* תוספות למסמכים ותבניות */
+        .template-container {
+            border: 1px solid #e0e0f0;
+            border-radius: 8px;
+            padding: 5px;
+            background-color: white;
+            margin-top: 10px;
+        }
+        
+        .template-content {
+            padding: 15px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+        
+        .action-button {
+            background-color: #f0f5ff;
+            border: 1px solid #4c6ef5;
+            color: #4c6ef5;
+            border-radius: 20px;
+            padding: 7px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .action-button i {
+            margin-left: 5px;
+        }
+        
+        .action-button:hover {
+            background-color: #4c6ef5;
+            color: white;
+        }
+        
+        .action-button.primary {
+            background-color: #4c6ef5;
+            color: white;
+        }
+        
+        .action-button.primary:hover {
+            background-color: #3b5ef0;
+        }
+        
+        /* אייקונים */
+        @font-face {
+            font-family: 'Material Icons';
+            font-style: normal;
+            font-weight: 400;
+            src: url(https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/4.0.0/font/MaterialIcons-Regular.woff2) format('woff2');
+        }
+        
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="material-icons">menu_book</i>
+                    מידע על זכויות
+                </div>
+                <div class="sidebar-content">
+                    <div class="info-item" onclick="loadArticle('rights-info')">
+                        <div class="info-item-title">זכויות ילדים על הרצף האוטיסטי</div>
+                        <div>מידע על זכויות בסיסיות, סל טיפולים וזכאויות</div>
+                    </div>
+                    <div class="info-item" onclick="loadArticle('tabam-info')">
+                        <div class="info-item-title">תוכנית טב"מ בגני תקשורת</div>
+                        <div>הסבר על תוכנית הטיפול הבריאותי המקדם</div>
+                    </div>
+                    <div class="info-item" onclick="loadArticle('kupot-rights')">
+                        <div class="info-item-title">זכויות בקופות החולים</div>
+                        <div>מידע על טיפולים המגיעים מקופות החולים</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="material-icons">description</i>
+                    תבניות מכתבים
+                </div>
+                <div class="sidebar-content">
+                    <div class="info-item" onclick="loadDocument('kupah-letter')">
+                        <div class="info-item-title">מכתב לקופת חולים</div>
+                        <div>תבנית מכתב לדרישת טיפולים חסרים</div>
+                    </div>
+                    <div class="info-item" onclick="loadDocument('health-ministry-letter')">
+                        <div class="info-item-title">מכתב למשרד הבריאות</div>
+                        <div>תבנית מכתב למחלקה לאוטיזם</div>
+                    </div>
+                    <div class="info-item" onclick="loadDocument('gan-letter')">
+                        <div class="info-item-title">מכתב לגן/עמותה</div>
+                        <div>בקשת אישור על חוסר בטיפולים</div>
+                    </div>
+                    <div class="info-item" onclick="loadDocument('complaints-letter')">
+                        <div class="info-item-title">מכתב לנציב קבילות</div>
+                        <div>תבנית תלונה לנציב קבילות</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="material-icons">lightbulb</i>
+                    אסטרטגיות פעולה
+                </div>
+                <div class="sidebar-content">
+                    <div class="info-item" onclick="loadDocument('parallel-strategy')">
+                        <div class="info-item-title">אסטרטגיית פעולה במקביל</div>
+                        <div>פעולה מול כל הגורמים בו-זמנית</div>
+                    </div>
+                    <div class="info-item" onclick="loadDocument('escalation-strategy')">
+                        <div class="info-item-title">אסטרטגיית הסלמה מדורגת</div>
+                        <div>תהליך פנייה הדרגתי לפי רמות סמכות</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <i class="material-icons">support</i>
+                    ארגוני סיוע
+                </div>
+                <div class="sidebar-content">
+                    <div class="resource-links">
+                        <a href="javascript:void(0)" class="resource-link">
+                            <i class="material-icons">public</i>
+                            אלו"ט
+                        </a>
+                        <a href="javascript:void(0)" class="resource-link">
+                            <i class="material-icons">public</i>
+                            קשר
+                        </a>
+                        <a href="javascript:void(0)" class="resource-link">
+                            <i class="material-icons">public</i>
+                            ית"ד
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-wrapper">
+            <div class="chat-header">
+                <button class="toggle-sidebar" id="toggle-sidebar">
+                    <i class="material-icons">menu</i>
+                </button>
+                <div class="title-container">
+                    <h1>צ'אטבוט למיצוי זכויות טיפוליות</h1>
+                    <div class="subtitle">גן תקשורת - רצף אוטיסטי</div>
+                </div>
+                <div>
+                    <i class="material-icons">help_outline</i>
+                </div>
+            </div>
+            
+            <div class="chat-box" id="chat-box">
+                <!-- תוכן השיחה יתווסף כאן באמצעות JavaScript -->
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="הקלד/י הודעה...">
+                <button id="send-button">
+                    <i class="material-icons">send</i>
+                    שלח
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // מאגר הידע של המערכת
+        const knowledgeBase = {
+            // מאמרים מידע
+            'rights-info': {
+                title: "זכויות ילדים על הרצף האוטיסטי",
+                content: `
+                <h2>זכויות ילדים על הרצף האוטיסטי בגיל הגן</h2>
+                
+                <p>ילדים המאובחנים על הרצף האוטיסטי זכאים למגוון שירותים וזכויות מגורמים שונים במדינה. חשוב להכיר את הזכויות כדי למצות אותן באופן מיטבי.</p>
+                
+                <h3>זכויות ממשרד הרווחה</h3>
+                <ul>
+                    <li><strong>גמלת ילד נכה</strong> - קצבה חודשית מהביטוח הלאומי בסך כ-3,000 ש"ח (נכון ל-2024)</li>
+                    <li><strong>תו חניה לנכה</strong> ופטור מאגרת רישוי רכב</li>
+                    <li><strong>נקודות זיכוי במס הכנסה</strong> להורים (2.5 נקודות זיכוי)</li>
+                    <li><strong>מטפח/ת אישי/ת</strong> (סומך) ל-4 שעות שבועיות</li>
+                    <li><strong>קייטנות</strong> בחופשות</li>
+                </ul>
+                
+                <h3>זכויות ממשרד החינוך</h3>
+                <ul>
+                    <li><strong>גן תקשורת</strong> עם צוות מומחה לאוטיזם</li>
+                    <li><strong>סייעת צמודה</strong> לילדים המשולבים בחינוך הרגיל</li>
+                    <li><strong>הסעות</strong> למסגרת החינוכית וחזרה, כולל ליווי</li>
+                    <li><strong>הארכת יום לימודים</strong> עד השעה 16:45</li>
+                    <li><strong>שנת לימודים ארוכה יותר</strong> (11 חודשים בשנה)</li>
+                </ul>
+                
+                <h3>זכויות ממשרד הבריאות / קופות החולים</h3>
+                <ul>
+                    <li><strong>טיפולים פרא-רפואיים</strong> במסגרת תוכנית טב"מ בגן תקשורת או דרך קופת החולים</li>
+                    <li><strong>טיפולים התנהגותיים</strong> בהיקף של עד 3 טיפולים שבועיים</li>
+                    <li><strong>אבחונים</strong> להערכת התפתחות וקשיים נלווים</li>
+                    <li><strong>הנחות בתרופות</strong> ובטיפולים רפואיים</li>
+                </ul>
+                
+                <p>חשוב לדעת: הזכויות משתנות מעת לעת, ויש לבדוק את המידע העדכני מול הגורמים הרלוונטיים. אם אתם נתקלים בקשיים במיצוי הזכויות, מומלץ להיעזר בארגוני סיוע המתמחים בתחום.</p>
+                `
+            },
+            'tabam-info': {
+                title: "תוכנית טב\"מ בגני תקשורת",
+                content: `
+                <h2>תוכנית הטיפול הבריאותי המקדם (טב"מ)</h2>
+                
+                <p>תכנית הטיפול הבריאותי המקדם (טב"מ) הינה תכנית משותפת של משרד הבריאות ומשרד החינוך המספקת טיפולים פרא-רפואיים לילדים עם אוטיזם במסגרות החינוך המיוחד.</p>
+                
+                <h3>מה כוללת תוכנית טב"מ?</h3>
+                <p>התוכנית אמורה לכלול את הטיפולים הבאים עבור כל ילד/ה:</p>
+                <ul>
+                    <li><strong>קלינאות תקשורת</strong> - טיפול שבועי אחד לפחות</li>
+                    <li><strong>ריפוי בעיסוק</strong> - טיפול שבועי אחד לפחות</li>
+                    <li><strong>פיזיותרפיה</strong> - לפי הצורך</li>
+                    <li><strong>טיפול רגשי</strong> - לפי הצורך</li>
+                </ul>
+                
+                <h3>איך מתבצעת התוכנית?</h3>
+                <p>הטיפולים ניתנים במסגרת הגן על ידי מטפלים מקצועיים המגיעים לגן. היתרון הגדול בכך הוא שהטיפולים משולבים במערך היום-יומי של הגן, והמטפלים עובדים בתיאום עם הצוות החינוכי.</p>
+                
+                <h3>מה קורה כשיש חוסר בטיפולים?</h3>
+                <p>למרבה הצער, לא פעם קיים מחסור במטפלים במסגרת תוכנית טב"מ, והילדים אינם מקבלים את מלוא הטיפולים להם הם זכאים. במצב כזה יש מספר אפשרויות:</p>
+                
+                <ol>
+                    <li><strong>השלמת טיפולים בקופת החולים</strong> - ניתן לפנות לקופת החולים בבקשה להשלמת הטיפולים החסרים</li>
+                    <li><strong>חתימה על טופס ויתור טב"מ</strong> - ויתור על שירותי הטב"מ וקבלת 3 טיפולים שבועיים בקופת החולים</li>
+                    <li><strong>פנייה למשרד הבריאות</strong> - דיווח על החוסר וביקורת</li>
+                </ol>
+                
+                <h3>טופס ויתור טב"מ</h3>
+                <p>הורים רשאים לבחור לוותר על שירותי טב"מ ולקבל במקום זאת שירותים דרך קופת החולים בהיקף של 3 טיפולים שבועיים. יתרונות וחסרונות:</p>
+                
+                <div style="display: flex; margin: 15px 0;">
+                    <div style="flex: 1; padding: 10px; background-color: #f0f8ff; border-radius: 8px; margin-left: 10px;">
+                        <h4 style="color: #4c6ef5;">יתרונות הוויתור</h4>
+                        <ul>
+                            <li>3 טיפולים שבועיים מובטחים</li>
+                            <li>בחירת המטפלים</li>
+                            <li>גמישות בשעות הטיפול</li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; padding: 10px; background-color: #fff5f5; border-radius: 8px;">
+                        <h4 style="color: #e03131;">חסרונות הוויתור</h4>
+                        <ul>
+                            <li>אובדן הרצף הטיפולי בגן</li>
+                            <li>טרחה בהגעה לטיפולים</li>
+                            <li>פחות תיאום בין המטפלים לצוות החינוכי</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p>חשוב לשקול את האפשרויות בהתאם למצב הספציפי של ילדכם ולמידת החוסר בטיפולים בגן.</p>
+                `
+            },
+            'kupot-rights': {
+                title: "זכויות בקופות החולים",
+                content: `
+                <h2>זכויות בקופות החולים לילדים על הרצף האוטיסטי</h2>
+                
+                <p>ילדים על הרצף האוטיסטי זכאים לטיפולים פרא-רפואיים ממספר מקורות, כאשר קופות החולים הן גורם מרכזי. חשוב להכיר את הזכויות כדי לממש אותן במלואן.</p>
+                
+                <h3>הבסיס החוקי</h3>
+                <p>סעיף 22 לחוק ביטוח בריאות ממלכתי קובע באופן מפורש:</p>
+                <blockquote style="padding: 10px; background-color: #f9f9f9; border-right: 3px solid #4c6ef5; margin: 15px 0;">
+                    "אין בהוראות סעיף זה כדי לשלול מתן שירותי בריאות, הכלולים בסל שירותי הבריאות, לתלמיד הזכאי להם, גם כאשר השירותים ניתנים בשעות הלימודים ובמוסד החינוכי שבו הוא לומד"
+                </blockquote>
+                
+                <p>משמעות הדבר היא שקופות החולים אינן יכולות לפטור עצמן מחובתן לספק טיפולים רק בשל קיומה של תוכנית טב"מ, במיוחד כאשר הטיפולים אינם ניתנים בפועל.</p>
+                
+                <h3>הטיפולים המגיעים לילד/ה על הרצף</h3>
+                <ul>
+                    <li><strong>קלינאות תקשורת</strong></li>
+                    <li><strong>ריפוי בעיסוק</strong></li>
+                    <li><strong>פיזיותרפיה</strong> (לפי הצורך)</li>
+                    <li><strong>טיפול רגשי</strong></li>
+                    <li><strong>טיפולים התנהגותיים</strong> (ABA)</li>
+                </ul>
+                
+                <h3>מצבים שונים ביחס לקופות החולים</h3>
+                
+                <div style="margin: 15px 0;">
+                    <h4 style="color: #4c6ef5; margin-bottom: 5px;">ילד/ה בגן תקשורת המקבל/ת טב"מ באופן מלא:</h4>
+                    <p>במצב זה, הקופה רשאית להפנות לטיפולים הניתנים במסגרת החינוכית.</p>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <h4 style="color: #4c6ef5; margin-bottom: 5px;">ילד/ה בגן תקשורת עם חוסר בטיפולי טב"מ:</h4>
+                    <p>הקופה מחויבת להשלים את הטיפולים החסרים. פס"ד עת"מ 29254-01-13 קבע תקדים בנושא.</p>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <h4 style="color: #4c6ef5; margin-bottom: 5px;">ילד/ה שהוריו חתמו על ויתור טב"מ:</h4>
+                    <p>זכאי/ת ל-3 טיפולים שבועיים בקופת החולים ללא קשר למסגרת החינוכית.</p>
+                </div>
+                
+                <div style="background-color: #e7f5ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <h4 style="color: #4c6ef5; margin-bottom: 5px;">איך מתמודדים עם סירוב של קופת החולים?</h4>
+                    <ol>
+                        <li>יש לפנות בכתב ולציין במפורש את החוסר בטיפולים ואת הבסיס החוקי לדרישה</li>
+                        <li>מומלץ לצרף אישור מהגן/העמותה המעיד על החוסר בטיפולים</li>
+                        <li>במקרה של סירוב חוזר, יש לפנות לנציב קבילות הציבור במשרד הבריאות</li>
+                        <li>במקביל, ניתן לפנות למחלקה לאוטיזם במשרד הבריאות</li>
+                    </ol>
+                </div>
+                
+                <p>זכרו: מיצוי זכויות דורש לעיתים התמדה והתעקשות. אל תוותרו על זכויותיכם!</p>
+                `
+            },
+            
+            // מסמכים ותבניות
+            'kupah-letter': {
+                title: "תבנית מכתב לקופת חולים",
+                content: `
+                <h3>תבנית מכתב לקופת חולים</h3>
+                <div class="template-container">
+                  <div class="template-content">
+                    <p>תאריך: [תאריך]</p>
+                    
+                    <p>לכבוד:<br>
+                    קופת חולים [שם הקופה]<br>
+                    מחלקת התפתחות הילד<br>
+                    מחוז [שם המחוז]</p>
+                    
+                    <p><strong>הנדון: בקשה להשלמת טיפולים פרא-רפואיים החסרים במסגרת תוכנית טב"מ בגן תקשורת</strong></p>
+                    
+                    <p>שלום רב,</p>
+                    
+                    <ol>
+                      <li>אני, [שם ההורה], הורה ל[שם הילד/ה], ת.ז. [מספר ת.ז.], הלומד/ת בגן תקשורת [שם הגן] בעיר [שם העיר], פונה אליכם בבקשה להשלמת טיפולים פרא-רפואיים החסרים במסגרת תוכנית הטיפול הבריאותי המקדם (טב"מ).</li>
+                      <li>ילדי/תי אינו/ה מקבל/ת טיפול [סוג הטיפול החסר: קלינאות תקשורת/ריפוי בעיסוק/פיזיותרפיה וכו'] במסגרת תוכנית הטב"מ בגן, עקב מחסור במטפלים. מצורף אישור רשמי מהעמותה המפעילה את הגן המעיד על חוסר זה.</li>
+                      <li>פנייתי מבוססת על סעיף 22 לחוק ביטוח בריאות ממלכתי, הקובע באופן מפורש כי "אין בהוראות סעיף זה כדי לשלול מתן שירותי בריאות, הכלולים בסל שירותי הבריאות, לתלמיד הזכאי להם, גם כאשר השירותים ניתנים בשעות הלימודים ובמוסד החינוכי שבו הוא לומד".</li>
+                      <li>משמעות הדבר היא שקופת החולים אינה יכולה לפטור עצמה מחובתה המקצועית-רפואית כלפי מטופליה רק בשל קיומה של תוכנית טב"מ, כאשר בפועל הטיפולים ההכרחיים אינם ניתנים והרצף הטיפולי נפגע.</li>
+                      <li>יצוין כי דו"ח מבקר המדינה משנת 2017 כבר התריע על בעיה דומה, ומתח ביקורת על קופות החולים שמסרבות במקרים מסוימים להעניק טיפולים המגיעים כדין לילדים.</li>
+                      <li>בהתאם לחוות דעת מקצועית של [שם המומחה/אנשי מקצוע], ילדי/תי זקוק/ה בדחיפות ל[מספר] טיפולי [סוג הטיפול] בשבוע לצורך שיפור תפקודו/ה והתפתחותו/ה התקינה (מצ"ב חוות הדעת).</li>
+                      <li>לאור האמור לעיל, אבקש:
+                        <ol type="a">
+                          <li>אישור לקבלת [מספר] טיפולי [סוג הטיפול] שבועיים במסגרת קופת החולים עד להסדרת הטיפולים במסגרת תכנית הטב"מ</li>
+                          <li>הפניות מתאימות למטפלים בתחום</li>
+                          <li>החזר רטרואקטיבי עבור טיפולים פרטיים ששילמתי מכיסי מתאריך [תאריך תחילת החוסר]</li>
+                        </ol>
+                      </li>
+                      <li>אבקש לקבל את תשובתכם בכתב תוך 14 ימי עבודה מיום קבלת מכתב זה.</li>
+                    </ol>
+                    
+                    <p>לתשובתכם אודה.</p>
+                    
+                    <p>בכבוד רב,<br>
+                    [שם ההורה]<br>
+                    [מספר טלפון]<br>
+                    [כתובת מייל]</p>
+                    
+                    <p><strong>העתקים:</strong><br>
+                    המחלקה לאוטיזם, משרד הבריאות<br>
+                    עמותת [שם העמותה המפעילה את הגן]</p>
+                    
+                    <p><strong>מצ"ב:</strong><br>
+                    אישור מהגן/העמותה המפעילה על היעדר הטיפול<br>
+                    חוות דעת מקצועית על נחיצות הטיפול<br>
+                    קבלות על טיפולים פרטיים (אם רלוונטי)</p>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-letter">
+                        <i class="material-icons">content_copy</i>
+                        העתק מכתב
+                    </button>
+                    <button class="action-button primary" id="download-letter">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+            'health-ministry-letter': {
+                title: "תבנית מכתב למשרד הבריאות",
+                content: `
+                <h3>תבנית מכתב למשרד הבריאות</h3>
+                <div class="template-container">
+                  <div class="template-content">
+                    <p>תאריך: [תאריך]</p>
+                    
+                    <p>לכבוד:<br>
+                    המחלקה לאוטיזם<br>
+                    משרד הבריאות<br>
+                    ירושלים</p>
+                    
+                    <p><strong>הנדון: דיווח על חוסר בטיפולים במסגרת תכנית טב"מ וביקורת על קופת החולים</strong></p>
+                    
+                    <p>שלום רב,</p>
+                    
+                    <ol>
+                      <li>אני, [שם ההורה], הורה ל[שם הילד/ה], ת.ז. [מספר ת.ז.], הלומד/ת בגן תקשורת [שם הגן] בעיר [שם העיר], פונה אליכם בדיווח על חוסר משמעותי בטיפולים במסגרת תכנית הטיפול הבריאותי המקדם (טב"מ).</li>
+                      <li>ילדי/תי אינו/ה מקבל/ת טיפול [סוג הטיפול החסר] במסגרת תוכנית הטב"מ בגן, וזאת החל מתאריך [תאריך תחילת החוסר]. מצורף אישור רשמי מהעמותה המפעילה את הגן המעיד על חוסר זה.</li>
+                      <li>בהתאם להנחיות, פניתי לקופת חולים [שם הקופה] בבקשה להשלמת הטיפולים החסרים, אולם נתקלתי בסירוב בטענה כי [פרט את הטענה של הקופה]. מצורף העתק המכתב שנשלח לקופה ותשובתם.</li>
+                      <li>אבקש את התערבותכם הדחופה בנושא בשני מישורים:
+                        <ol type="a">
+                          <li>הנחיית העמותה המפעילה את תכנית הטב"מ בגן להשלים את החוסר בטיפולים בהקדם האפשרי</li>
+                          <li>הנחיית קופת החולים לספק את הטיפולים החסרים באופן זמני עד להסדרת המצב בגן</li>
+                        </ol>
+                      </li>
+                      <li>אבקש לציין כי מדובר בילד/ה על הרצף האוטיסטי הזקוק/ה לטיפולים אלו באופן רציף לצורך התפתחותו/ה התקינה, וכל עיכוב במתן הטיפולים גורם לנזק התפתחותי מצטבר.</li>
+                      <li>אבקש לקבל את התייחסותכם ואת הנחיותיכם בכתב תוך 14 ימי עבודה מיום קבלת מכתב זה.</li>
+                    </ol>
+                    
+                    <p>לתשובתכם אודה.</p>
+                    
+                    <p>בכבוד רב,<br>
+                    [שם ההורה]<br>
+                    [מספר טלפון]<br>
+                    [כתובת מייל]</p>
+                    
+                    <p><strong>העתקים:</strong><br>
+                    קופת חולים [שם הקופה]<br>
+                    עמותת [שם העמותה המפעילה את הגן]</p>
+                    
+                    <p><strong>מצ"ב:</strong><br>
+                    אישור מהגן/העמותה המפעילה על היעדר הטיפול<br>
+                    מכתב לקופת החולים ותשובתם (אם יש)<br>
+                    חוות דעת מקצועית על נחיצות הטיפול (אם יש)</p>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-letter">
+                        <i class="material-icons">content_copy</i>
+                        העתק מכתב
+                    </button>
+                    <button class="action-button primary" id="download-letter">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+            'gan-letter': {
+                title: "תבנית מכתב בקשת אישור מהגן",
+                content: `
+                <h3>תבנית מכתב בקשה לעמותה המפעילה את הגן</h3>
+                <div class="template-container">
+                  <div class="template-content">
+                    <p>תאריך: [תאריך]</p>
+                    
+                    <p>לכבוד:<br>
+                    מנהל/ת גן [שם הגן]<br>
+                    עמותת [שם העמותה]</p>
+                    
+                    <p><strong>הנדון: בקשת אישור רשמי על חוסר בטיפולים במסגרת תוכנית טב"מ</strong></p>
+                    
+                    <p>שלום רב,</p>
+                    
+                    <p>אני, [שם ההורה], הורה ל[שם הילד/ה], ת.ז. [מספר ת.ז.], המשולב/ת בגן תקשורת [שם הגן], פונה אליכם בבקשה לקבל אישור רשמי על חוסר בטיפולים במסגרת תוכנית הטב"מ.</p>
+                    
+                    <p>על פי התוכנית, ילדי/תי אמור/ה לקבל טיפולי [סוגי הטיפולים הנדרשים], אך בפועל לא מקבל/ת טיפולי [סוגי הטיפולים החסרים] מאז תאריך [תאריך תחילת החוסר].</p>
+                    
+                    <p>אישור זה נדרש לצורך פנייה לקופת החולים ו/או למשרד הבריאות בבקשה להשלמת הטיפולים החסרים, כפי שמגיע לילדי/תי על פי חוק.</p>
+                    
+                    <p>אבקש כי האישור יכלול את הפרטים הבאים:</p>
+                    <ol>
+                      <li>שם הילד/ה ומספר ת.ז.</li>
+                      <li>סוגי הטיפולים שאמורים להינתן במסגרת תוכנית טב"מ</li>
+                      <li>סוגי הטיפולים שאינם ניתנים בפועל</li>
+                      <li>תאריך תחילת החוסר</li>
+                      <li>הסיבה לחוסר (מחסור במטפלים / תקציב וכו')</li>
+                      <li>הערכה לגבי מועד משוער להשלמת החוסר (אם ידוע)</li>
+                    </ol>
+                    
+                    <p>אודה על מענה מהיר לבקשתי.</p>
+                    
+                    <p>בכבוד רב,<br>
+                    [שם ההורה]<br>
+                    [מספר טלפון]<br>
+                    [כתובת מייל]</p>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-letter">
+                        <i class="material-icons">content_copy</i>
+                        העתק מכתב
+                    </button>
+                    <button class="action-button primary" id="download-letter">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+            'complaints-letter': {
+                title: "תבנית מכתב לנציב קבילות",
+                content: `
+                <h3>תבנית מכתב לנציב קבילות הציבור במשרד הבריאות</h3>
+                <div class="template-container">
+                  <div class="template-content">
+                    <p>תאריך: [תאריך]</p>
+                    
+                    <p>לכבוד:<br>
+                    נציב קבילות הציבור<br>
+                    משרד הבריאות<br>
+                    ירושלים</p>
+                    
+                    <p><strong>הנדון: קבילה בעניין סירוב קופת חולים להשלמת טיפולים פרא-רפואיים החסרים במסגרת תוכנית טב"מ</strong></p>
+                    
+                    <p>שלום רב,</p>
+                    
+                    <ol>
+                      <li>אני, [שם ההורה], הורה ל[שם הילד/ה], ת.ז. [מספר ת.ז.], הלומד/ת בגן תקשורת [שם הגן] בעיר [שם העיר], ומבוטח/ת בקופת חולים [שם הקופה], מגיש/ה בזאת קבילה כנגד התנהלות קופת החולים בנוגע לסירובה להשלים טיפולים פרא-רפואיים החסרים לילדי/תי.</li>
+                      <li>ילדי/תי אינו/ה מקבל/ת טיפול [סוג הטיפול החסר] במסגרת תוכנית הטב"מ בגן, וזאת החל מתאריך [תאריך תחילת החוסר], כפי שניתן לראות באישור המצורף מהעמותה המפעילה את הגן.</li>
+                      <li>פניתי לקופת החולים ביום [תאריך הפנייה לקופה] בבקשה להשלים את הטיפולים החסרים, אולם בקשתי נדחתה ביום [תאריך התשובה] בטענה כי [פירוט סיבת הסירוב].</li>
+                      <li>דחיית בקשתי עומדת בסתירה לסעיף 22 לחוק ביטוח בריאות ממלכתי, הקובע כי "אין בהוראות סעיף זה כדי לשלול מתן שירותי בריאות, הכלולים בסל שירותי הבריאות, לתלמיד הזכאי להם, גם כאשר השירותים ניתנים בשעות הלימודים ובמוסד החינוכי שבו הוא לומד".</li>
+                      <li>כמו כן, דחייה זו עומדת בניגוד לפסיקת בית המשפט בעת"מ 29254-01-13, שקבעה כי קופת החולים אינה יכולה לפטור עצמה ממתן טיפולים כאשר אלה אינם ניתנים בפועל במסגרת החינוכית.</li>
+                      <li>חשוב לציין כי מדובר בילד/ה על הרצף האוטיסטי הזקוק/ה לטיפולים אלו באופן רציף לצורך התפתחותו/ה התקינה, וכל עיכוב גורם לנזק התפתחותי מצטבר.</li>
+                      <li>לאור כל האמור לעיל, אבקש את התערבות נציבות קבילות הציבור בהוראה לקופת החולים לספק לילדי/תי:
+                        <ol type="a">
+                          <li>[מספר] טיפולי [סוג הטיפול] שבועיים עד להסדרת הטיפולים במסגרת תכנית הטב"מ</li>
+                          <li>החזר כספי רטרואקטיבי עבור הטיפולים ששילמתי באופן פרטי מיום [תאריך תחילת התשלום הפרטי], בסך [סכום]</li>
+                        </ol>
+                      </li>
+                    </ol>
+                    
+                    <p>אבקשכם לטפל בקבילתי בדחיפות ואודה על עדכון בנוגע להתקדמות הטיפול בה.</p>
+                    
+                    <p>בכבוד רב,<br>
+                    [שם ההורה]<br>
+                    [כתובת]<br>
+                    [מספר טלפון]<br>
+                    [כתובת מייל]</p>
+                    
+                    <p><strong>העתקים:</strong><br>
+                    קופת חולים [שם הקופה] - מנהל המחוז<br>
+                    המחלקה לאוטיזם, משרד הבריאות</p>
+                    
+                    <p><strong>מצ"ב:</strong><br>
+                    אישור מהגן/העמותה המפעילה על היעדר הטיפול<br>
+                    העתק המכתב שנשלח לקופת החולים<br>
+                    העתק תשובת קופת החולים<br>
+                    חוות דעת מקצועית על נחיצות הטיפול (אם יש)<br>
+                    קבלות עבור טיפולים פרטיים (אם יש)</p>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-letter">
+                        <i class="material-icons">content_copy</i>
+                        העתק מכתב
+                    </button>
+                    <button class="action-button primary" id="download-letter">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+            'parallel-strategy': {
+                title: "אסטרטגיית פעולה במקביל",
+                content: `
+                <h3>אסטרטגיית פעולה במקביל</h3>
+                
+                <p>
+                  כאשר אתם נתקלים בחסמים בירוקרטיים ופיצול אחריות בין הגורמים השונים, פעולה במקביל מול כל הגורמים הרלוונטיים 
+                  יכולה להיות אפקטיבית יותר מאשר פניות סדרתיות.
+                </p>
+                
+                <h4>עקרונות מנחים לאסטרטגיית פעולה במקביל:</h4>
+                
+                <ol>
+                  <li>
+                    <strong>פנייה סימולטנית לכל הגורמים הרלוונטיים</strong>
+                    <p>
+                      במקום לחכות לתשובה מגורם אחד לפני פנייה לגורם הבא, פנו במקביל לכל הגורמים הרלוונטיים: 
+                      קופת החולים, המחלקה לאוטיזם במשרד הבריאות, העמותה המפעילה את הגן, והמתי"א (מרכז תמיכה יישובי אזורי).
+                    </p>
+                  </li>
+                  <li>
+                    <strong>יידוע הדדי</strong>
+                    <p>
+                      בכל פנייה, ציינו שפניתם גם לגורמים האחרים והעתיקו את כל הגורמים הרלוונטיים במכתבים ובמיילים. 
+                      הידיעה שהנושא מטופל במקביל על ידי גורמים שונים יכולה להגביר את המוטיבציה למתן מענה.
+                    </p>
+                  </li>
+                  <li>
+                    <strong>תיעוד ומעקב</strong>
+                    <p>
+                      נהלו מעקב מסודר אחר כל הפניות: תאריכים, גורמים, אנשי קשר, תגובות והבטחות. 
+                      תיעוד מדויק מסייע בהמשך התהליך ובמקרה של צורך בהסלמה.
+                    </p>
+                  </li>
+                  <li>
+                    <strong>הגדרת זמן תגובה</strong>
+                    <p>
+                      בכל פנייה, ציינו תאריך יעד לקבלת תשובה (בדרך כלל 14 ימי עבודה הם פרק זמן סביר). 
+                      אם לא התקבלה תשובה עד למועד זה, שלחו תזכורת.
+                    </p>
+                  </li>
+                </ol>
+                
+                <h4>תהליך מומלץ:</h4>
+                
+                <ol>
+                  <li>
+                    <strong>שלב ראשון: איסוף אסמכתאות</strong>
+                    <p>התחילו בקבלת אישור רשמי מהגן/העמותה על חוסר בטיפולים.</p>
+                  </li>
+                  <li>
+                    <strong>שלב שני: פניות ראשוניות</strong>
+                    <p>
+                      שלחו במקביל:
+                    </p>
+                    <ul>
+                      <li>מכתב לקופת החולים בבקשה להשלמת טיפולים</li>
+                      <li>מכתב למחלקה לאוטיזם במשרד הבריאות</li>
+                      <li>פנייה למתי"א (מרכז תמיכה יישובי אזורי)</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>שלב שלישי: מעקב ותזכורות</strong>
+                    <p>
+                      אם לא התקבלה תשובה תוך 14 ימי עבודה, שלחו תזכורות בכתב. 
+                      לאחר תזכורת שנייה, מומלץ לפנות גם טלפונית.
+                    </p>
+                  </li>
+                  <li>
+                    <strong>שלב רביעי: הסלמה במקרה הצורך</strong>
+                    <p>
+                      אם לא מתקבל מענה מספק, עברו לשלב ההסלמה:
+                    </p>
+                    <ul>
+                      <li>פנייה לדרגים בכירים יותר בכל ארגון</li>
+                      <li>פנייה לנציב קבילות הציבור במשרד הבריאות</li>
+                      <li>פנייה למבקר המדינה במקרים חמורים</li>
+                    </ul>
+                  </li>
+                </ol>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-strategy">
+                        <i class="material-icons">content_copy</i>
+                        העתק אסטרטגיה
+                    </button>
+                    <button class="action-button primary" id="download-strategy">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+            'escalation-strategy': {
+                title: "אסטרטגיית הסלמה מדורגת",
+                content: `
+                <h3>אסטרטגיית הסלמה מדורגת</h3>
+                
+                <p>
+                  כאשר מיצוי זכויות נתקל בקשיים ואין תגובה לפניות הראשוניות, אסטרטגיית הסלמה מדורגת יכולה להיות יעילה. 
+                  האסטרטגיה מבוססת על עיקרון של מעבר שיטתי ומתועד בין דרגי סמכות עולים.
+                </p>
+                
+                <h4>עקרונות מנחים לאסטרטגיית הסלמה:</h4>
+                
+                <ol>
+                  <li>
+                    <strong>תיעוד קפדני של כל פנייה</strong>
+                    <p>
+                      שמרו תיעוד של כל פנייה, תזכורת ותשובה. תעדו שיחות טלפון (תאריך, שעה, שם הנציג). 
+                      התיעוד הוא הבסיס להסלמה אפקטיבית.
+                    </p>
+                  </li>
+                  <li>
+                    <strong>התקדמות מדורגת ומוגדרת</strong>
+                    <p>
+                      קבעו מראש את שלבי ההסלמה והתנאים למעבר משלב לשלב (למשל, העדר תגובה במשך 14 ימי עבודה).
+                    </p>
+                  </li>
+                  <li>
+                    <strong>ציון היסטוריית פניות קודמות</strong>
+                    <p>
+                      בכל פנייה חדשה, ציינו את כל הפניות הקודמות שביצעתם, כולל תאריכים ותגובות (או העדר תגובות).
+                    </p>
+                  </li>
+                  <li>
+                    <strong>שמירה על טון ענייני</strong>
+                    <p>
+                      הימנעו מתוקפנות או האשמות אישיות. שמרו על טון ענייני, מקצועי ומבוסס-עובדות גם בשלבי הסלמה מתקדמים.
+                    </p>
+                  </li>
+                </ol>
+                
+                <h4>שלבי ההסלמה המומלצים:</h4>
+                
+                <div style="border: 1px solid #e0e0f0; border-radius: 8px; margin: 15px 0; overflow: hidden;">
+                  <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background-color: #4c6ef5; color: white;">
+                      <th style="padding: 10px; text-align: right;">שלב</th>
+                      <th style="padding: 10px; text-align: right;">פעולה</th>
+                      <th style="padding: 10px; text-align: right;">זמן המתנה</th>
+                    </tr>
+                    <tr style="background-color: #f5f8ff;">
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">1</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">פנייה ראשונית לגורם האחראי (מוקד שירות/פקיד קבלה)</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">14 ימי עבודה</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">2</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">תזכורת + העתק למנהל המחלקה/השירות</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">10 ימי עבודה</td>
+                    </tr>
+                    <tr style="background-color: #f5f8ff;">
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">3</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">פנייה רשמית למנהל השירות/מחוז</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">10 ימי עבודה</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">4</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">פנייה לגורמי פיקוח (נציב קבילות/הממונה על זכויות)</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">30 ימי עבודה</td>
+                    </tr>
+                    <tr style="background-color: #f5f8ff;">
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">5</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">פנייה להנהלה הבכירה (מנכ"ל/הנהלת הארגון)</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">20 ימי עבודה</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">6</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">פנייה לגורמי רגולציה (משרד הבריאות/מבקר המדינה)</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #e0e0f0;">משתנה</td>
+                    </tr>
+                    <tr style="background-color: #f5f8ff;">
+                      <td style="padding: 10px;">7</td>
+                      <td style="padding: 10px;">פנייה לייעוץ משפטי / עמותות סיוע</td>
+                      <td style="padding: 10px;">-</td>
+                    </tr>
+                  </table>
+                </div>
+                
+                <p>
+                  <strong>עצה חשובה:</strong> בין שלבי ההסלמה, מומלץ לנסות גם ערוצי תקשורת שונים (מכתב רשום, פקס, מייל, שיחת טלפון) 
+                  כדי להגביר את הסיכוי לתגובה. לעיתים שיחת טלפון אחרי מכתב יכולה להועיל.
+                </p>
+                
+                <h4>תבנית תזכורת להסלמה:</h4>
+                <div class="template-container">
+                  <div class="template-content">
+                    <p>תאריך: [תאריך]</p>
+                    
+                    <p>לכבוד:<br>
+                    [שם הנמען]<br>
+                    [תפקיד]<br>
+                    [שם הארגון]</p>
+                    
+                    <p><strong>הנדון: תזכורת מספר [מספר] ופנייה לדרג [שם הדרג] - בעניין [נושא הפנייה]</strong></p>
+                    
+                    <p>שלום רב,</p>
+                    
+                    <p>הריני לפנות אליכם בנוגע לפנייתי בעניין [תיאור קצר של העניין] שטרם זכתה למענה מספק.</p>
+                    
+                    <p><strong>היסטוריית הפניות בנושא:</strong></p>
+                    <ol>
+                      <li>ביום [תאריך] פניתי אל [שם ותפקיד] בבקשה [תיאור הבקשה].</li>
+                      <li>ביום [תאריך] שלחתי תזכורת ראשונה.</li>
+                      <li>ביום [תאריך] קיבלתי מענה/לא קיבלתי כל מענה.</li>
+                      <li>[המשך היסטוריית הפניות...]</li>
+                    </ol>
+                    
+                    <p>בשל העובדה שפניותיי הקודמות לא זכו למענה מספק, ומתוך הכרה בחשיבות העניין לטיפולו של ילדי/תי, הנני מעלה את הפנייה לטיפולכם.</p>
+                    
+                    <p>אודה על טיפולכם המהיר בפנייתי זו והתייחסותכם עד לתאריך [תאריך יעד למענה].</p>
+                    
+                    <p>בכבוד רב,<br>
+                    [שם מלא]<br>
+                    [מספר טלפון]<br>
+                    [כתובת מייל]</p>
+                    
+                    <p><strong>העתקים:</strong><br>
+                    [רשימת גורמים שהועתקו, למשל דרגים בכירים יותר]</p>
+                    
+                    <p><strong>מצ"ב:</strong><br>
+                    [רשימת מסמכים שצורפו, כולל כל הפניות הקודמות והתגובות להן]</p>
+                  </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="copy-escalation">
+                        <i class="material-icons">content_copy</i>
+                        העתק אסטרטגיה
+                    </button>
+                    <button class="action-button primary" id="download-escalation">
+                        <i class="material-icons">download</i>
+                        הורד כקובץ
+                    </button>
+                </div>
+                `
+            },
+        };
+        
+        // מערך של הודעות לדמו
+        const demoMessages = [
+            {
+                role: 'bot',
+                content: `שלום, אני כאן כדי לסייע לכם במיצוי זכויות טיפוליות עבור ילדכם על הרצף האוטיסטי בגן תקשורת.
+      
+אני יכול לעזור במגוון נושאים:
+• מידע על זכויות ושירותים
+• טיפול בחוסר במענה טיפולי
+• הכנת מכתבים לגורמים השונים
+• אסטרטגיות פעולה והתמודדות
+
+במה אוכל לסייע לך היום?`,
+                quickReplies: [
+                    "לא מקבלים את כל הטיפולים בגן",
+                    "רוצה לדעת על הזכויות",
+                    "הקופה מסרבת לתת טיפולים",
+                    "מרגיש/ה שחיקה ועומס"
+                ]
+            },
+            {
+                role: 'user',
+                content: "לא מקבלים את כל הטיפולים בגן"
+            },
+            {
+                role: 'bot',
+                content: `אני מבין שילדך אינו מקבל את כל הטיפולים להם הוא זכאי במסגרת גן התקשורת.
+        
+זהו אתגר נפוץ, ואני כאן לסייע. האם תוכל/י לפרט איזה טיפולים חסרים לילדך (קלינאות תקשורת, ריפוי בעיסוק, וכו')?
+        
+בנוסף, אשמח לדעת מה עשית עד כה בנושא (פנית לקופת חולים, למשרד הבריאות וכו')?`,
+                quickReplies: [
+                    "קלינאות תקשורת",
+                    "ריפוי בעיסוק",
+                    "עוד לא פניתי לקופה",
+                    "הקופה דחתה את בקשתי"
+                ]
+            },
+            {
+                role: 'user',
+                content: "קלינאות תקשורת וגם ריפוי בעיסוק. פניתי לקופה והם אמרו שלא מגיע לנו כי אנחנו בטב\"מ"
+            },
+            {
+                role: 'bot',
+                content: `תודה על השיתוף. אני מבין שילדך אינו מקבל טיפולי קלינאות תקשורת וריפוי בעיסוק במסגרת הגן, וקופת החולים סירבה לבקשתך בטענה שהילד משתתף בתוכנית טב"מ.
+        
+במצב זה ישנן שתי אפשרויות עיקריות:
+1. לחתום על טופס ויתור על טב"מ ולקבל 3 טיפולים שבועיים בקופת החולים
+2. להישאר בתוכנית הטב"מ ולפעול להשלמת הטיפולים החסרים
+
+מה הייתה תרצה/י לעשות?`,
+                quickReplies: [
+                    "מידע על ויתור טב\"מ",
+                    "מכתב לקופת חולים",
+                    "מכתב למשרד הבריאות",
+                    "מידע על שתי האפשרויות"
+                ]
+            },
+            {
+                role: 'user',
+                content: "מידע על שתי האפשרויות"
+            },
+            {
+                role: 'bot',
+                content: `אשמח להציג בפניך השוואה בין שתי האפשרויות העיקריות:
+
+**אפשרות 1: חתימה על טופס ויתור על טב"מ**
+*יתרונות*: זכאות ברורה לקבלת 3 טיפולים שבועיים בקופת החולים
+*חסרונות*: ויתור על כלל שירותי הטב"מ, גם אלו שכן ניתנים
+
+**אפשרות 2: השארות בתוכנית הטב"מ תוך פעולה להשלמת הטיפולים**
+*יתרונות*: שמירה על המעטפת הטיפולית בגן
+*חסרונות*: תהליך מורכב יותר שדורש התמודדות עם קופת החולים ומשרד הבריאות
+
+אוכל לספק לך מידע מפורט על כל אחת מהאפשרויות.`,
+                quickReplies: [
+                    "מידע מפורט",
+                    "טופס ויתור",
+                    "מכתב לקופת חולים",
+                    "אסטרטגיית פעולה"
+                ]
+            },
+            {
+                role: 'user',
+                content: "מכתב לקופת חולים"
+            },
+            {
+                role: 'bot',
+                content: `מכתב מנומק לקופת החולים הוא צעד חשוב במיצוי הזכויות. הכנתי עבורך תבנית מכתב שתוכל/י להתאים לנסיבות שלך.
+
+לפני שתפנה/י לקופה, חשוב שיהיה בידך אישור רשמי מהגן/מהעמותה המפעילה על החוסר בטיפולים.
+
+הנה תבנית המכתב לקופת החולים:`,
+                document: 'kupah-letter',
+                quickReplies: [
+                    "האם יש גם מכתב למשרד הבריאות?",
+                    "איך משיגים אישור מהגן?",
+                    "מה עושים אם הקופה מסרבת?",
+                    "מידע על אסטרטגיית פעולה"
+                ]
+            },
+            {
+                role: 'user',
+                content: "איך משיגים אישור מהגן?"
+            },
+            {
+                role: 'bot',
+                content: `כדי להשיג אישור רשמי מהגן על חוסר בטיפולים, עליך לפנות לגננת או למנהל/ת הגן ולבקש אישור רשמי מהעמותה המפעילה את תוכנית הטב"מ.
+
+הכנתי עבורך תבנית מכתב שתוכל/י להשתמש בה לבקשת אישור זה:`,
+                document: 'gan-letter',
+                quickReplies: [
+                    "מה עושים אם הגן מסרב לתת אישור?",
+                    "מכתב למשרד הבריאות",
+                    "אסטרטגיית פעולה",
+                    "ארגוני סיוע"
+                ]
+            },
+            {
+                role: 'user',
+                content: "אסטרטגיית פעולה"
+            },
+            {
+                role: 'bot',
+                content: `לפניך שתי אסטרטגיות פעולה מומלצות:
+
+**1. אסטרטגיית פעולה במקביל**
+פנייה בו-זמנית לכל הגורמים הרלוונטיים - קופת החולים, משרד הבריאות והגן. אסטרטגיה זו מגבירה את הסיכוי לקבלת מענה מהיר.
+
+**2. אסטרטגיית הסלמה מדורגת**
+תהליך הדרגתי של פניות, תזכורות והסלמה לדרגים בכירים יותר. אפקטיבית במקרים של סירוב מתמשך.
+
+הנה מידע מפורט על אסטרטגיית פעולה במקביל:`,
+                document: 'parallel-strategy',
+                quickReplies: [
+                    "מכתב למשרד הבריאות",
+                    "מכתב לנציב קבילות",
+                    "ארגוני סיוע ותמיכה",
+                    "חזרה לאפשרויות הראשיות"
+                ]
+            },
+            {
+                role: 'user',
+                content: "חזרה לאפשרויות הראשיות"
+            },
+            {
+                role: 'bot',
+                content: `כמובן, הנה האפשרויות הראשיות. במה אוכל לסייע לך?`,
+                quickReplies: [
+                    "לא מקבלים את כל הטיפולים בגן",
+                    "רוצה לדעת על הזכויות",
+                    "הקופה מסרבת לתת טיפולים",
+                    "מרגיש/ה שחיקה ועומס",
+                    "מידע על תוכנית טב\"מ"
+                ]
+            }
+        ];
+
+        // פונקציה להוספת הודעה לתיבת הצ'אט
+        function addMessage(message) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.role}`;
+            
+            let contentHTML = '';
+            if (message.role === 'bot') {
+                contentHTML = `<div class="bot-content">${formatBotMessage(message.content)}</div>`;
+                
+                // אם יש מסמך, נוסיף אותו
+                if (message.document) {
+                    const doc = knowledgeBase[message.document];
+                    if (doc) {
+                        contentHTML += `
+                            <div class="document-container">
+                                <div class="document-title">
+                                    <i class="material-icons">description</i>
+                                    ${doc.title}
+                                </div>
+                                <div class="document-content">${doc.content}</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // אם יש אפשרויות מהירות, נוסיף אותן
+                if (message.quickReplies && message.quickReplies.length > 0) {
+                    contentHTML += '<div class="quick-replies">';
+                    message.quickReplies.forEach(reply => {
+                        contentHTML += `<div class="quick-reply" onclick="selectQuickReply('${reply}')">${reply}</div>`;
+                    });
+                    contentHTML += '</div>';
+                }
+            } else {
+                contentHTML = `<p>${message.content}</p>`;
+            }
+            
+            // הוספת שעה
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            contentHTML += `<div class="time">${timeString}</div>`;
+            
+            messageDiv.innerHTML = contentHTML;
+            chatBox.appendChild(messageDiv);
+            
+            // גלילה לתחתית תיבת הצ'אט
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // פונקציה לפורמט הודעות הבוט (תמיכה במרקדאון בסיסי)
+        function formatBotMessage(content) {
+            // החלפת כוכביות כפולות לטקסט מודגש
+            let formatted = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // החלפת כוכבית בודדת לטקסט נטוי
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // החלפת שורות חדשות ל-<br>
+            formatted = formatted.replace(/\n/g, '<br>');
+            
+            // החלפת רשימות ממוספרות
+            formatted = formatted.replace(/(\d+\.\s.*?)(?=\n\d+\.|\n\n|$)/gs, '<li>$1</li>');
+            if (formatted.includes('<li>')) {
+                formatted = formatted.replace(/<li>(.*?)(?=<li>|$)/gs, '<ol><li>$1</li></ol>');
+                formatted = formatted.replace(/<\/ol><ol>/g, '');
+            }
+            
+            // החלפת רשימות עם נקודות
+            formatted = formatted.replace(/•\s(.*?)(?=\n•|\n\n|$)/gs, '<li>$1</li>');
+            if (formatted.includes('<li>') && !formatted.includes('<ol>')) {
+                formatted = formatted.replace(/<li>(.*?)(?=<li>|$)/gs, '<ul><li>$1</li></ul>');
+                formatted = formatted.replace(/<\/ul><ul>/g, '');
+            }
+            
+            return formatted;
+        }
+        
+        // פונקציה שמטפלת בבחירת תשובה מהירה
+        window.selectQuickReply = function(reply) {
+            document.getElementById('message-input').value = reply;
+            sendMessage();
+        }
+        
+        // פונקציה לטעינת מאמר או מסמך לתיבת הצ'אט
+        window.loadArticle = function(articleId) {
+            const article = knowledgeBase[articleId];
+            if (article) {
+                addMessage({
+                    role: 'bot',
+                    content: `הנה המידע על ${article.title}:`,
+                    document: articleId,
+                    quickReplies: [
+                        "תודה על המידע",
+                        "יש לי שאלה נוספת",
+                        "כיצד ליישם את המידע?",
+                        "חזרה לאפשרויות הראשיות"
+                    ]
+                });
+            }
+        }
+        
+        // פונקציה לטעינת מסמך לתיבת הצ'אט
+        window.loadDocument = function(documentId) {
+            const document = knowledgeBase[documentId];
+            if (document) {
+                addMessage({
+                    role: 'bot',
+                    content: `הנה המסמך שביקשת:`,
+                    document: documentId,
+                    quickReplies: [
+                        "תודה על המסמך",
+                        "כיצד להשתמש במסמך זה?",
+                        "יש לי שאלה נוספת",
+                        "חזרה לאפשרויות הראשיות"
+                    ]
+                });
+            }
+        }
+        
+        // פונקציה לשליחת הודעה
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // הוספת הודעת המשתמש
+                addMessage({
+                    role: 'user',
+                    content: message
+                });
+                
+                input.value = '';
+                
+                // הוספת אינדיקטור הקלדה
+                const chatBox = document.getElementById('chat-box');
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'typing-indicator';
+                typingIndicator.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                chatBox.appendChild(typingIndicator);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // חיפוש הודעה מתאימה מהדמו
+                let foundMessage = null;
+                for (let i = 0; i < demoMessages.length; i++) {
+                    if (demoMessages[i].role === 'user' && 
+                        (demoMessages[i].content.toLowerCase() === message.toLowerCase() || 
+                         demoMessages[i].content.toLowerCase().includes(message.toLowerCase().substring(0, 10)))) {
+                        if (i + 1 < demoMessages.length && demoMessages[i + 1].role === 'bot') {
+                            foundMessage = demoMessages[i + 1];
+                            break;
+                        }
+                    }
+                }
+                
+                // אם לא נמצאה הודעה מתאימה, ניקח את הראשונה מהסוף
+                if (!foundMessage) {
+                    for (let i = demoMessages.length - 1; i >= 0; i--) {
+                        if (demoMessages[i].role === 'bot') {
+                            foundMessage = demoMessages[i];
+                            break;
+                        }
+                    }
+                }
+                
+                // דימוי זמן תגובה
+                setTimeout(() => {
+                    // הסרת אינדיקטור ההקלדה
+                    chatBox.removeChild(typingIndicator);
+                    
+                    if (foundMessage) {
+                        addMessage(foundMessage);
+                    } else {
+                        // אם אין הודעה מתאימה בדמו, ניתן תשובת ברירת מחדל
+                        addMessage({
+                            role: 'bot',
+                            content: 'אני מבין את בקשתך. האם תוכל/י לפרט יותר כדי שאוכל לסייע באופן ממוקד?',
+                            quickReplies: [
+                                "זכויות בסיסיות",
+                                "טיפול בחוסר במענה",
+                                "התמודדות עם סירוב",
+                                "עומס רגשי ולוגיסטי"
+                            ]
+                        });
+                    }
+                }, 1500);
+            }
+        }
+        
+        // טיפול בפתיחה וסגירה של הסיידבר במובייל
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+        
+        // אירועים
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+        document.getElementById('message-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // מעקב אחרי כפתורי העתקה והורדה (לא מיושמים במלואם בדמו)
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'copy-letter' || e.target.parentElement && e.target.parentElement.id === 'copy-letter') {
+                alert('המכתב הועתק ללוח');
+            }
+            
+            if (e.target && e.target.id === 'download-letter' || e.target.parentElement && e.target.parentElement.id === 'download-letter') {
+                alert('המכתב הורד כקובץ');
+            }
+        });
+        
+        // טעינה ראשונית של השיחה
+        window.onload = () => {
+            // הוספת הודעת הפתיחה
+            addMessage(demoMessages[0]);
+        };
+    </script>
+</body>
+</html>
